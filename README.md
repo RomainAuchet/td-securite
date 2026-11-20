@@ -66,15 +66,25 @@ Tout le monde voit tous les comptes, et **alice**, une simple cliente, vient de 
 
 ## Partie 1 : Basic Auth sur Spring
 
-1. Ajoutez `org.springframework.boot:spring-boot-starter-security`. Relancez : que renvoie maintenant l'API ?
+1. Ajoutez `org.springframework.boot:spring-boot-starter-security`. Relancez : que renvoie maintenant l'API ? 
+Maintenant l'api exige que l'on se connecte et le XPOST ne renvoie plus rien. 
 2. Déclarez le bean `PasswordEncoder` (BCrypt) : c'est lui qui comparera le mot de passe reçu au hash en base.
+Dans le fichier Security.config
 3. Écrivez un `UserDetailsService` qui charge l'`Utilisateur` en base par son login.
+UtilisateurDetailsService.java
 4. Écrivez la `SecurityFilterChain` : Basic Auth, sans session (`STATELESS`), toutes les requêtes `/api/**` authentifiées.
+Dans securityConfig.java
 5. Vérifiez avec `curl -u alice:alice123 localhost:8080/api/me`, puis décodez l'en-tête `Authorization: Basic …` (`echo … | base64 -d`). Est-ce du chiffrement ?
+Non c'est du base64 rien n'est chiffré en décodant en base64 le header on obtient alice:alice123%
 6. Remplacez `UtilisateurCourantFake` par un `UtilisateurCourant` qui lit le `SecurityContext`.
+UtilisateurCourantNotFake
 7. Le front reçoit une erreur CORS : le navigateur envoie un `OPTIONS` **sans** identifiants. Autorisez-le dans la chaîne (`.cors(...)`).
 
 *Piège :* le CSRF est actif par défaut. Pour une API stateless en Basic Auth, que faut-il en faire, et pourquoi ?
+Via le cours : 
+Elle protège les sessions par cookie
+Notre API est stateless, avec un header : pas de cookie à protéger 
+.csrf(csrf -> csrf.disable())
 
 ## Partie 2 : Angular
 
